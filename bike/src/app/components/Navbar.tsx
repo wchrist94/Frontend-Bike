@@ -1,6 +1,13 @@
+"use client"
+
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { Session } from "inspector";
+import { on } from "events";
 
 function Navbar() {
+  const { data: session } = useSession();
+
   return (
 <nav className="bg-white bg-opacity-60 py-1 shadow-lg border-b-2 border-black border-opacity-40 fixed top-0 w-full z-10">      
   <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -43,6 +50,13 @@ function Navbar() {
                 </p>
               </Link>
             </li>
+            {!session ? (
+              <p></p>
+              ) : (
+                <li>
+                  <button onClick={() => signOut()}>Sign out</button>
+                </li>
+              )}
           </ul>
         </div>
       </div>
