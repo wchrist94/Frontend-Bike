@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const router = useRouter();
+  const [company, setCompany] = useState('')
 
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,7 +59,7 @@ export default function LoginPage() {
       const res1 = await fetch('api/auth/userExists', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, company}),
       });
 
       const {user} = await res1.json();
@@ -71,7 +72,7 @@ export default function LoginPage() {
       const res = await fetch('api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, company}),
       });
 
       if (res.ok) {
@@ -98,16 +99,19 @@ export default function LoginPage() {
 
   return (
   <div className='grid place-items-center h-screen'>
-    <div className='shadow-lg p-5 rounded-lg border-t-4 border-green-400'>
+    <div className='shadow-lg p-5 rounded-lg border-t-4 border-blue-400'>
       <h1 className='text-xl font-bold my-4 text-center'>{formType === FormType.LOGIN ? "Login" : "Register"}</h1>
 
       <form className="flex flex-col gap-3" onSubmit={formType === FormType.LOGIN ? handleLogin : handleRegister}>
         {formType === FormType.REGISTER && (
-          <input type="text" placeholder='Name' onChange={(e) => setName(e.target.value)}/>
+            <div className='flex flex-col gap-3'>
+                <input type="text" placeholder='Name' onChange={(e) => setName(e.target.value)}/>
+                <input type="text" placeholder="Company" onChange={(e) => setCompany(e.target.value)}/>
+            </div>
         )}
         <input type="text" placeholder='Email' onChange={(e) => setEmail(e.target.value)}/> 
         <input type="password" placeholder='Password' onChange={(e) => setPassword(e.target.value)}/>
-        <button className="bg-green-600 text-white font-bold cursor-pointer px-6 py-2">
+        <button className="bg-blue-600 text-white font-bold cursor-pointer px-6 py-2">
           {formType === FormType.LOGIN ? "Login" : "Register"}
         </button>
 
