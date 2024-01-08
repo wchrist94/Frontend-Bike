@@ -2,12 +2,18 @@
 
 import React, { useState } from 'react';
 import Bikebox from '../components/Bikebox';
-import Bike from '../../../type/Bike'; // Adjust the import path based on your project structure
-import User from '../../../type/User'; // Adjust the import path based on your project structure
-import useUserData from '../../../hook/useUserData';
+import { useSession } from 'next-auth/react';
 
+export default function ProfilePage() {
 
-interface ProfileProps {
+  const { data: session } = useSession();
+  return (
+    <div className='grid place-items-center h-screen'>
+      Hello {session?.user?.name ?? 'Stranger'}
+    </div>
+  );
+}
+/* interface ProfileProps {
   // Add any props if needed
 }
 
@@ -67,7 +73,6 @@ const Profile: React.FC<ProfileProps> = () => {
                 </span>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
-                {/* Your form inputs */}
                 <input
                   type="text"
                   placeholder="Serial Number"
@@ -95,4 +100,4 @@ const Profile: React.FC<ProfileProps> = () => {
   );
 };
 
-export default Profile;
+export default Profile; */

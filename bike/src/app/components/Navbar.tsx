@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Session } from "inspector";
 import { on } from "events";
 
 function Navbar() {
