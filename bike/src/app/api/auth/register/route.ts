@@ -6,14 +6,16 @@ import Company from "../../../../../@types/company";
 
 export async function POST (req : any) {
     try {
-        const { name, email, password, company} = await req.json();
+        //Get the user data from the request body role can be in the body or not
+        const { name, email, password, company, role} = await req.json();
+
         const hashedPassword = await bcrypt.hash(password, 12);
 
         await connectMongoDB();
         await Company.create({name:company});
 
         //Create a new iuser with a reference to the company
-        await User.create({name, email, password:hashedPassword, company});
+        await User.create({name, email, password:hashedPassword, company, role});
 
         return NextResponse.json({message : "User created successfully"}, {status : 201});
 

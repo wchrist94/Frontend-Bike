@@ -1,6 +1,7 @@
 import "../../style/globals.css"
 import { AuthProvider } from "./provider.js"
-import Navbar from "./components/Navbar"
+import Nav from "./components/Nav"
+import {NextUIProvider} from "@nextui-org/react";
 
 export default function RootLayout({
   children,
@@ -9,9 +10,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="light">
           <AuthProvider>
-            <Navbar/>
+            <Nav/>
             {children}
           </AuthProvider>
         </body>

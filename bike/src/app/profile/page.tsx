@@ -3,41 +3,73 @@
 import React, { use, useEffect, useState } from 'react';
 import Bikebox from '../components/Bikebox';
 import { useSession } from 'next-auth/react';
+import { RadioGroup, Radio, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import { set } from 'mongoose';
 
 export default function ProfilePage() {
 
-  const [usersList, setUsersList] = useState<any[]>([]); // Provide a type for the usersList state variable
+  const [usersList, setUsersList] = useState<any[]>([]); 
 
   const { data: session } = useSession();
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('');
+
+  const [selectedRole, setSelectedRole] = useState('');
+
+  const selectedValue = React.useMemo(() => Array.from(selectedRole).join(', ').replaceAll("_", " "), [selectedRole]
+  );
+
+  const getBackgroundColorClass = (role :String) => {
+    switch (role) {
+      case 'Manager':
+        return 'bg-red-500';
+      case 'Developer':
+        return 'bg-blue-500';
+      case 'Tester':
+        return 'bg-green-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ company: session?.user?.company}),
+      });
+      const data = await res.json();
+      const {users} = data;
+      console.log(users)
+      setUsersList(users);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch('/api/profile', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ company: session?.user?.company}),
-        });
-        const data = await res.json();
-        const {users} = data;
-        console.log(users)
-        setUsersList(users);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     if (session) fetchUsers();
   }, [session]);
 
-  const handleAddUser = async () => {
+  const handleAddUser = async (name : String, email : String, password : String) => {
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'test', email: '
+        body: JSON.stringify({ name, email, password, company: session?.user?.company, role: selectedRole}),
+      });
+      onOpenChange();
+      await fetchUsers();
+    } catch (error) {
+      console.error(error);
     }
+  }
 
   return (
     <div className='grid grid-cols-3 gap-4 mt-20'>
@@ -48,13 +80,44 @@ export default function ProfilePage() {
         <h2 className='text-center mt-4 font-bold'>Users</h2>
         <ul className='text-center'>
           {usersList.map((user) => (
-            <li key={user._id} className='p-4 bg-green-200 rounded m-4'>
+            <li key={user._id} className={`p-4 ${getBackgroundColorClass(user.role)} rounded m-4`}>
               {user.name} - {user.role}
             </li>
           ))}
-          <li onClick={test} className='bg-zinc-500 p-4 m-4'>
+          <Button onPress={onOpen} className='bg-zinc-500 p-4 m-4'>
             + Add User
-          </li>
+          </Button>
+          <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop='blur'>
+            <ModalContent>
+              {(onClose) => (
+                <>
+                <div className='items-center'>
+                  <ModalHeader>Add User</ModalHeader>
+                </div>
+                <ModalBody>
+                  <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-3">
+                    <input type='text' placeholder='Name' className='rounded' onChange={(e) => setName(e.target.value)}/>
+                    <input type='text' placeholder='Email'className='rounded' onChange={(e) => setEmail(e.target.value)}/>
+                    <input type='text' placeholder='Password'className='rounded' onChange={(e) => setPassword(e.target.value)} />
+                    <RadioGroup
+                      value={selectedRole}
+                      onValueChange={setSelectedRole}
+                      orientation='horizontal'
+                    >
+                      <Radio value="Manager">Manager</Radio>
+                      <Radio value="Developer">Developer</Radio>
+                      <Radio value="Tester">Tester</Radio>
+                    </RadioGroup>
+                  </form>
+                </ModalBody>
+                <ModalFooter>
+                  <Button onClick={onClose} color='danger'>Cancel</Button>
+                  <Button onClick={() => handleAddUser(name,email,password)}  color="primary">Confirm</Button>
+                </ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
         </ul>
       </div>
     </div>

@@ -72,7 +72,7 @@ export default function LoginPage() {
       const res = await fetch('api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, company}),
+        body: JSON.stringify({ name, email, password, company, role: "Manager"}),
       });
 
       if (res.ok) {
