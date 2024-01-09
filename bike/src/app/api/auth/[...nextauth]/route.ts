@@ -2,7 +2,8 @@ import { SessionStrategy } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "../../../../../lib/mongodb";
-import User from "../../../../../types/user";
+import User from "../../../../../@types/user";
+import Company from "../../../../../@types/company";
 import bcrypt from "bcryptjs";
 
 export const authOptions = {
@@ -42,6 +43,16 @@ export const authOptions = {
     secret : process.env.NEXTAUTH_SECRET,
     pages: {
         signIn: "/login",
+    },
+    callbacks: {
+        async session ({session, user}: {session: any, user: any}) {
+            
+            await connectMongoDB();
+            const user1 = await User.findOne({ email: session.user.email });
+            session.user.company = user1.company;
+            session.user.role = user1.role;
+            return session;
+        },
     },
 };
 

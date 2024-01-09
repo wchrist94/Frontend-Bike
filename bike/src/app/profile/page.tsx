@@ -1,15 +1,57 @@
 "use client";
-
-import React, { useState } from 'react';
+ 
+import React, { use, useEffect, useState } from 'react';
 import Bikebox from '../components/Bikebox';
 import { useSession } from 'next-auth/react';
 
 export default function ProfilePage() {
 
+  const [usersList, setUsersList] = useState<any[]>([]); // Provide a type for the usersList state variable
+
   const { data: session } = useSession();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch('/api/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ company: session?.user?.company}),
+        });
+        const data = await res.json();
+        const {users} = data;
+        console.log(users)
+        setUsersList(users);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (session) fetchUsers();
+  }, [session]);
+
+  const test = async () => {
+    console.log('test')
+  }
+
   return (
-    <div className='grid place-items-center h-screen'>
-      Hello {session?.user?.name ?? 'Stranger'}
+    <div className='grid grid-cols-3 gap-4 mt-20'>
+      <div className='col-span-2'>
+        Hello {session?.user?.name ?? 'Stranger'} from {session?.user?.company ?? 'Nowhere'}
+      </div>
+      <div className='flex flex-col'>
+        <ul className='text-center'>
+          {usersList.map((user) => (
+            <li key={user._id}>
+              {user.name}
+            </li>
+          ))}
+          <li onClick={test} className='bg-zinc-500'>
+            + Add User
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "../../../../../lib/mongodb";
-import User from "../../../../../types/user";
+import User from "../../../../../@types/user";
 import bcrypt from "bcryptjs";
-import Company from "../../../../../types/company";
+import Company from "../../../../../@types/company";
 
 export async function POST (req : any) {
     try {
@@ -12,9 +12,8 @@ export async function POST (req : any) {
         await connectMongoDB();
         await Company.create({name:company});
 
-        const savedCompany = await Company.findOne({name:company});
         //Create a new iuser with a reference to the company
-        await User.create({name, email, password:hashedPassword, company:savedCompany._id});
+        await User.create({name, email, password:hashedPassword, company});
 
         return NextResponse.json({message : "User created successfully"}, {status : 201});
 
@@ -22,3 +21,4 @@ export async function POST (req : any) {
         return NextResponse.json({message : "An error occured"}, {status : 500});
     }
 }
+
