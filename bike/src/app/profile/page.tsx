@@ -3,7 +3,7 @@
 import React, { use, useEffect, useState } from 'react';
 import Bikebox from '../components/Bikebox';
 import { useSession } from 'next-auth/react';
-import { RadioGroup, Radio, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import { Card, Image, CardBody, CardFooter, RadioGroup, Radio, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import { set } from 'mongoose';
 
 export default function ProfilePage() {
@@ -21,6 +21,29 @@ export default function ProfilePage() {
 
   const selectedValue = React.useMemo(() => Array.from(selectedRole).join(', ').replaceAll("_", " "), [selectedRole]
   );
+
+  const list = [
+    {
+      title: "Bike A",
+      img: "https://www.creativefabrica.com/wp-content/uploads/2021/03/07/Cute-hand-drawn-Bicycle-or-bike-icon-Graphics-9292804-1-580x387.jpg",
+      status: "Active",
+    },
+    {
+      title: "Bike B",
+      img: "https://www.creativefabrica.com/wp-content/uploads/2021/03/07/Cute-hand-drawn-Bicycle-or-bike-icon-Graphics-9292804-1-580x387.jpg",
+      status: "Active",
+    },
+    {
+      title: "Bike C",
+      img: "https://www.creativefabrica.com/wp-content/uploads/2021/03/07/Cute-hand-drawn-Bicycle-or-bike-icon-Graphics-9292804-1-580x387.jpg",
+      status: "Active",
+    },
+    {
+      title: "Bike D",
+      img: "https://www.creativefabrica.com/wp-content/uploads/2021/03/07/Cute-hand-drawn-Bicycle-or-bike-icon-Graphics-9292804-1-580x387.jpg",
+      status: "Active",
+    },
+  ];
 
   const getBackgroundColorClass = (role :String) => {
     switch (role) {
@@ -72,9 +95,33 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='grid grid-cols-3 gap-4 mt-20'>
-      <div className='col-span-2'>
-        Hello {session?.user?.name ?? 'Stranger'} from {session?.user?.company ?? 'Nowhere'}
+    <div className='grid grid-cols-4 gap-4 mt-20'>
+      <div className='col-span-3'>
+        <div className='grid grid-cols-2 gap-4'>
+          {list.map((item, index) => (
+            <Card shadow='sm' key={index} isPressable onPress={() => console.log("Pressed")}>
+              <CardBody className='overflow-visible p-0'>
+                <Image
+                  shadow='sm'
+                  radius='lg'
+                  width = "100%"
+                  alt = {item.title}
+                  className="w-full object-cover h-[140px]"
+                  src = {item.img}
+                />
+              </CardBody>
+              <CardFooter className='text-small justify-between'>
+                <b>{item.title}</b>
+                <p className='text-default-500'>{item.status}</p>
+              </CardFooter>
+            </Card>
+          ))}
+          <Card shadow='sm' isPressable onPress={() => console.log("Pressed")}>
+          <CardBody className='overflow-visible p-0'>
+              <span className="shadow-sm radius-lg width-100% w-full object-cover h-[140px] flex justify-center items-center text-xl font-bold">+ Add Bike</span>
+          </CardBody>
+          </Card>
+        </div>
       </div>
       <div className='sticky top-0 flex flex-col gap-3 border border-2 rounded m-2 '>
         <h2 className='text-center mt-4 font-bold'>Users</h2>
@@ -84,7 +131,7 @@ export default function ProfilePage() {
               {user.name} - {user.role}
             </li>
           ))}
-          <Button onPress={onOpen} className='bg-zinc-500 p-4 m-4'>
+          <Button onPress={onOpen} className='p-4 mb-2' color='primary' variant='ghost'>
             + Add User
           </Button>
           <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop='blur'>
