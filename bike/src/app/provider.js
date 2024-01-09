@@ -1,13 +1,15 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
-import Navbar from "./components/Navbar";
+import {NextUIProvider} from '@nextui-org/react'
 
 
 export const AuthProvider = ({ children }) => {
     return (
         <SessionProvider>
-            {children}
+            <NextUIProvider>
+                {children}
+            </NextUIProvider>s
         </SessionProvider>
     );
 };

@@ -31,23 +31,28 @@ export default function ProfilePage() {
     if (session) fetchUsers();
   }, [session]);
 
-  const test = async () => {
-    console.log('test')
-  }
+  const handleAddUser = async () => {
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'test', email: '
+    }
 
   return (
     <div className='grid grid-cols-3 gap-4 mt-20'>
       <div className='col-span-2'>
         Hello {session?.user?.name ?? 'Stranger'} from {session?.user?.company ?? 'Nowhere'}
       </div>
-      <div className='flex flex-col'>
+      <div className='sticky top-0 flex flex-col gap-3 border border-2 rounded m-2 '>
+        <h2 className='text-center mt-4 font-bold'>Users</h2>
         <ul className='text-center'>
           {usersList.map((user) => (
-            <li key={user._id}>
-              {user.name}
+            <li key={user._id} className='p-4 bg-green-200 rounded m-4'>
+              {user.name} - {user.role}
             </li>
           ))}
-          <li onClick={test} className='bg-zinc-500'>
+          <li onClick={test} className='bg-zinc-500 p-4 m-4'>
             + Add User
           </li>
         </ul>
